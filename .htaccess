@@ -1,0 +1,4 @@
+php_value include_path ".:/home/rigrace/workspace/cacti"
+php_value display_errors "on"
+
+php_value error_log "/home/rigrace/workspace/cacti/log/cacti-php-error.log"

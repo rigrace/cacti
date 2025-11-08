@@ -103,4 +103,5 @@ include/vendor/csrf/csrf-secret.php
 include/vendor/*
 vendor/*
 
+plugins/weathermap
 
