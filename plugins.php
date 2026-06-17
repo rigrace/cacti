@@ -808,9 +808,9 @@ function plugin_actions($plugin, $table) {
 		case '0': // Not Installed
 			$not_installed = plugin_required_installed($plugin, $table);
 		 	if ($not_installed != '') {
-		 	    $link .= "<a class='pierror' href='#' title='" . __esc('Unable to Install Plugin.  The following Plugins must be installed first: %s', ucfirst($not_installed)) . "' class='linkEditMain'><img src='" . $config['url_path'] . 'plugins/' . $plugin['directory'] . "/images/icons/emoticon_unhappy.png'></a>";
+		 	    $link .= "<a class='pierror' href='#' title='" . __esc('Unable to Install Plugin.  The following Plugins must be installed first: %s', ucfirst($not_installed)) . "' class='linkEditMain'><img src='" . $config['url_path'] . "images/emoticon_unhappy.png'></a>";
 			} else {
-			    $link .= "<a href='" . html_escape($config['url_path'] . 'plugins.php?mode=install&id=' . $plugin['directory']) . "' title='" . __esc('Install Plugin') . "' class='piinstall linkEditMain'><img src='" . $config['url_path'] . 'plugins/' . $plugin['directory'] . "/images/icons/emoticon_unhappy.png'></a>";
+			    $link .= "<a href='" . html_escape($config['url_path'] . 'plugins.php?mode=install&id=' . $plugin['directory']) . "' title='" . __esc('Install Plugin') . "' class='piinstall linkEditMain'><img src='" . $config['url_path'] . "images/emoticon_unhappy.png'></a>";
 			}
 			$link .= "<img src='" . $config['url_path'] . "images/view_none.gif'>";
 			break;
@@ -819,9 +819,9 @@ function plugin_actions($plugin, $table) {
 			if ($required != '') {
 				$link .= "<a class='pierror' href='#' title='" . __esc('Unable to Uninstall.  This Plugin is required by: %s', ucfirst($required)) . "'><img src='" . $config['url_path'] . "images/cog_error.png'></a>";
 			} else {
-			    $link .= "<a class='piuninstall' href='" . html_escape($config['url_path'] . 'plugins.php?mode=uninstall&id=' . $plugin['directory']) . "' title='" . __esc('Uninstall Plugin') . "'><img src='" . $config['url_path'] . 'plugins/' . $plugin['directory'] . "/images/icons/emoticon_smile.png'></a>";
+			    $link .= "<a class='piuninstall' href='" . html_escape($config['url_path'] . 'plugins.php?mode=uninstall&id=' . $plugin['directory']) . "' title='" . __esc('Uninstall Plugin') . "'><img src='" . $config['url_path'] . "images/emoticon_smile.png'></a>";
 			}
-			$link .= "<a class='pidisable' href='" . html_escape($config['url_path'] . 'plugins.php?mode=disable&id=' . $plugin['directory']) . "' title='" . __esc('Disable Plugin') . "'><img src='" . $config['url_path'] . 'plugins/' . $plugin['directory'] . "/images/icons/emoticon_smile.png'></a>";
+			$link .= "<a class='pidisable' href='" . html_escape($config['url_path'] . 'plugins.php?mode=disable&id=' . $plugin['directory']) . "' title='" . __esc('Disable Plugin') . "'><img src='" . $config['url_path'] . "images/emoticon_smile.png'></a>";
 			break;
 		case '2': // Configuration issues
 			$link .= "<a class='piuninstall' href='" . html_escape($config['url_path'] . 'plugins.php?mode=uninstall&id=' . $plugin['directory']) . "' title='" . __esc('Uninstall Plugin') . "'><img src='" . $config['url_path'] . "images/cog_delete.png'></a>";
@@ -831,9 +831,9 @@ function plugin_actions($plugin, $table) {
 			if ($required != '') {
 				$link .= "<a class='pierror' href='#' title='" . __esc('Unable to Uninstall.  This Plugin is required by: %s', ucfirst($required)) . "'><img src='" . $config['url_path'] . "images/cog_error.png'></a>";
 			} else {
-			    $link .= "<a class='piuninstall' href='" . html_escape($config['url_path'] . 'plugins.php?mode=uninstall&id=' . $plugin['directory']) . "' title='" . __esc('Uninstall Plugin') . "'><img src='" . $config['url_path'] . 'plugins/' . $plugin['directory'] . "/images/icons/emoticon_smile.png'></a>";
+			    $link .= "<a class='piuninstall' href='" . html_escape($config['url_path'] . 'plugins.php?mode=uninstall&id=' . $plugin['directory']) . "' title='" . __esc('Uninstall Plugin') . "'><img src='" . $config['url_path'] . "images/emoticon_smile.png'></a>";
 			}
-			$link .= "<a class='pienable' href='" . html_escape($config['url_path'] . 'plugins.php?mode=enable&id=' . $plugin['directory']) . "' title='" . __esc('Enable Plugin') . "'><img src='" . $config['url_path'] . 'plugins/' . $plugin['directory'] . "/images/icons/emoticon_unhappy.png'></a>";
+			$link .= "<a class='pienable' href='" . html_escape($config['url_path'] . 'plugins.php?mode=enable&id=' . $plugin['directory']) . "' title='" . __esc('Enable Plugin') . "'><img src='" . $config['url_path'] . "images/emoticon_unhappy.png'></a>";
 			break;
 		case '-5': // Plugin directory missing
 			$link .= "<a class='pierror' href='#' title='" . __esc('Plugin directory is missing!') . "' class='linkEditMain'><img src='images/cog_error.png'></a>";
