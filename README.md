@@ -64,9 +64,9 @@ sudo a2enmod rewrite
 mkdir -p ~/Documents/cacti
 CHANGE TO 1.2.x branch
 ```bash
-mkdir -p ~/Documents/cacti
+#mkdir -p ~/Documents/cacti - not required - git makes the leaf/target folder
 
-git clone -b 1.2.x https://github.com/Cacti/cacti.git ~/Documents/cacti
+git clone http://github.com/rigrace/cacti.git ~/Documents/cacti
 #CHANGE TO 1.2.x branch
 ```
 Start configure cacti:
@@ -75,30 +75,41 @@ cp ~/Documents/cacti/include/config.php.dist ~/Documents/cacti/include/config.ph
 vim ~/Documents/cacti/include/config.php
   - set mysql connection credentials
 
-sudo cp -R ~/Documents/cacti /var/www/html
-```
+#if only one vhost will be used just use don't create any extra, just put cacti directly in /var/www/html/[cacti] 
+#if you want to have multiple vhosts running cacti, do somthing like:
+sudo mkdir -p /var/www/html/PROD
+sudo mkdir -p /var/www/html/TEST
+sudo mkdir -p /var/www/html/DEV
+#etc...
+#do the following for each
+sudo cp -R ~/Documents/cacti /var/www/html/PROD
 
-```bash
 #Set file permissions for apache:
+#Create a script to run these lines
+sudo vim ~/SetCactiPermsInWWW.sh
+```vim
+#!/bin/bash
 sudo chown -R www-data:www-data /var/www/html/cacti
 sudo chmod -R 770 /var/www/html/cacti
 ```
------------------
-Using port 80/443 for /var/www/html/cacti
-Use another port such as 81 as SSL for workspace or alternate /var/www/html vhosts
-set listening ports - for example:
-http w/ port 81
-```bash
+#give the file user execute permission:
+chmod u+x ~/SetCactiPermsInWWW.sh
+#run it now, and anytime your done adding or editing, files or plugins etc...
+
+#Using port 80/443 for /var/www/html/cacti
+#Use another port such as 81 as SSL for workspace or alternate /var/www/html vhosts
+#set listening ports - for example:
+#http w/ port 81
+
 sudo vim /etc/apache2/ports.conf
 Listen 81
-```
+
 https w/ 81 (for alternate vhost, I usually save 443 for /var/www/html vhosts)
 ```VIM
 <IfModule ssl_module>
 	Listen 81
 </IfModule>
-```
-```bash
+
 sudo vim /etc/apache2/sites-available/cactiV.conf:
 ```
 ```vim
