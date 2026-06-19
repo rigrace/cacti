@@ -60,8 +60,6 @@ sudo a2enmod rewrite
 ```
 #Clone cacti base application to local folder & push it into /var/www/html/(cacti)
 
-
-mkdir -p ~/Documents/cacti
 CHANGE TO 1.2.x branch
 ```bash
 #mkdir -p ~/Documents/cacti - not required - git makes the leaf/target folder
@@ -86,52 +84,52 @@ sudo cp -R ~/Documents/cacti /var/www/html/PROD
 
 #Set file permissions for apache:
 #Create a script to run these lines
-sudo vim ~/SetCactiPermsInWWW.sh
+vim ~/SetCactiPermsInWWW.sh
 ```vim
 #!/bin/bash
-sudo chown -R www-data:www-data /var/www/html/cacti
-sudo chmod -R 770 /var/www/html/cacti
+sudo chown -R www-data:www-data /var/www/html
+sudo chmod -R 770 /var/www/html
 ```
 #give the file user execute permission:
 chmod u+x ~/SetCactiPermsInWWW.sh
 #run it now, and anytime your done adding or editing, files or plugins etc...
 
-#Using port 80/443 for /var/www/html/cacti
-#Use another port such as 81 as SSL for workspace or alternate /var/www/html vhosts
+#again, if you're only setting up one vhost, ignore most of this
+#Using port 80 or 443 for /var/www/html/PROD/cacti, 81 or 444 for /var/www/html/TEST/cacti, 82 or 445 for /var/www/html/DEV/cacti
+#Below is only showing a single vhost, the rest is just itteration, but to continue correlation , it'll be for the `PROD` vhost
 #set listening ports - for example:
-#http w/ port 81
+#http w/ port 80
 
 sudo vim /etc/apache2/ports.conf
-Listen 81
-
-https w/ 81 (for alternate vhost, I usually save 443 for /var/www/html vhosts)
 ```VIM
+Listen 80
+
 <IfModule ssl_module>
-	Listen 81
+	Listen 443
 </IfModule>
 
-sudo vim /etc/apache2/sites-available/cactiV.conf:
+#add the actual vhost
+sudo vim /etc/apache2/sites-available/cactiPROD.conf
 ```
 ```vim
 <VirtualHost *:80>
-   ServerName cacti
+   ServerName cactiPROD
    #ServerAlias www.cacti
    ServerAdmin no@email.com
-   DocumentRoot /var/www/html
+   DocumentRoot /var/www/html/PROD
    DirectoryIndex index.php
-   <Directory /var/www/html/cacti>
+   <Directory /var/www/html/PROD/cacti>
      Options FollowSymLinks
      AllowOverride None
-	 Require all granted
-	 #Redirect 403 /cacti/index.php
+     Require all granted
+     #Redirect 403 /cacti/index.php
    </Directory>
-   
+
        LogLevel warn
-       ErrorLog ${APACHE_LOG_DIR}/cacti_error.log
-       CustomLog ${APACHE_LOG_DIR}/cacti_access.log combined
-   
-   
-   
+       ErrorLog ${APACHE_LOG_DIR}/cacti_prod_error.log
+       CustomLog ${APACHE_LOG_DIR}/cacti_prod_access.log combined
+
+
 </VirtualHost>
 [exit saving changes]
 ```
@@ -139,76 +137,93 @@ sudo vim /etc/apache2/sites-available/cactiV.conf:
 remove default vhosts & add cactivhost
 ```bash
 sudo a2dissite 000-default.conf
-sudo a2ensite cactiV.conf
+sudo a2ensite cactiPROD.conf
 ```
 
 ----------------
+#basic mysql setup
+
 ```bash
-basic mysql setup
+
 sudo mysql -u root (actually using mariadb)
 ```
 once in mariadb
 ```SQL
-CREATE DATABASE cacti DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
+CREATE DATABASE cactiPROD DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
 CREATE DATABASE test;
 [create view to show mysql user status]
 create view test.musers_view as SELECT host, User, Select_priv, Insert_priv, Update_priv, Delete_priv, Execute_priv, Show_db_priv, ssl_type, grant_priv, ssl_cipher, x509_issuer, x509_subject FROM mysql.user;
 select * from test.musers_view;
 
-[create cactiuser for accessing database from cacti application, phpmyadmin if installed]
+[create cactiuser for accessing database from cacti application, & phpmyadmin if installed]
 create user 'cactiuser'@'localhost' IDENTIFIED BY 'some_password';
-alter user 'cactiuser'@'localhost' IDENTIFIED BY 'some_password'; [example of setting password after user is created]
-GRANT ALL PRIVILEGES ON cacti.* TO 'cactiuser'@'localhost'; [SUID will not suffice as cacti creates database objects during at least the install]
+#alter user 'cactiuser'@'localhost' IDENTIFIED BY 'some_password'; [example of setting password after user is created]
+GRANT ALL PRIVILEGES ON cactiPROD.* TO 'cactiuser'@'localhost'; [SUID will not suffice as cacti creates database objects during at least the install]
 GRANT SELECT ON mysql.time_zone_name TO 'cactiuser'@'localhost'; [to be filled below]
 
 [create admin for accessing database from cacti application, phpmyadmin if installed]
 create user 'admin'@'localhost' identified by 'some_password';
 grant all privileges on *.* to 'admin'@'localhost';
 grant grant option on *.* to 'admin'@'localhost';
-
-```
-
-run cacti database script to create cacti's database objects
-```BASH
-mysql -u cactiuser -p cacti < ~/Documents/cacti/cacti.sql
-```
-```mysql
-[set cacti's admin password]
-use cacti;
-update `user_auth` set password = md5('123456') where username = 'admin';
-[cacti will prompt to change password]
-
 FLUSH PRIVILEGES;
 quit
 ```
 
-Load mysql timezones
+#run cacti database script to create cacti's database objects
 ```BASH
-mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u allowed_user -p mysql
+mysql -u cactiuser -p cactiPROD < ~/Documents/cacti/cacti.sql
+
+#set cacti's admin password
+mysql -u cactiuser -p
+
 ```
-------------------
-Install phpmyadmin if not already
+```mysql
+
+use cacti;
+update `user_auth` set password = md5('123456') where username = 'admin';
+# cacti will prompt to change password at first login
+
+quit
+```
+
+#Load mysql timezones
+```
+BASH mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u admin -p mysql
+```
+#Set cacti admin user credentials
+```BASH
+mysql -u cactiuser -p
+```
+```MSQL
+use cacti;
+update `user_auth` set password = md5('123456') where username = 'admin';
+quit
+```
+# cacti will prompt to change password at first login
+
+#Install phpmyadmin if not already
 ```BASH
 sudo apt install phpmyadmin
 
-[using apache]
-[answer no to db-config prompt]
-
+#using apache
+#answer no to db-config prompt
 
 ./ApacheRestart.sh
 ./MySQLRestart.sh
 ```
-Run cacti initialization  by starting http://localhost/cacti
 
-- hit page localhost/cacti in browser
-- follow prompts
-  - Some mysql settings can't be set when the service is up (read on reload)
+#Run cacti initialization  by starting http://localhost/cacti in browswer
+#follow the prompts
+
+#Address PHP, Mariadb & other required tweaks for cacti pre-installation setup:
+- Some mysql settings can't be set when the service is up (read on reload)
+
+#php settings in:
+sudo vim /etc/php/#.#/apache2/php.ini
+
+mysql settings in:
 sudo vim /etc/mysql/my.cnf # and add them there
-[mysql] #section for mysql proper
-
-[mariadb] section for the one used here
-
-------
+[mariadb] for mariadb as installed above
 
 ```bash
 sudo chown -R www-data:www-data /usr/share/cacti/site/resource/snmp_queries/
