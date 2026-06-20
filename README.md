@@ -81,6 +81,19 @@ sudo mkdir -p /var/www/html/DEV
 
 #do the following for each
 sudo cp -R ~/Documents/cacti /var/www/html/(PROD|TEST|DEV)
+
+#Set the db inctance credentials per the environment name
+sudo vim /var/www/html/TEST/cacti/include/config.php
+```VIM
+...
+database_default  = 'cactiPROD';
+...
+$database_username = 'cactiproduser';
+...
+```
+
+
+sudo vim /var/www/html/PROD/cacti/include/config.php
 ```
 #Set file permissions for apache:
 #Create a script to run these lines
@@ -186,12 +199,12 @@ quit
 #Load mysql timezones
 #only need to do this once for all instances
 ```BASH
-mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u adminprod -p mysql
+mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u admin -p mysql
 ```
 #Set cacti admin user credentials
 #only need to do this once for all instances
 ```BASH
-mysql -u cactiuser -p
+mysql -u cactiproduser -p
 ```
 ```MSQL
 use cacti;
@@ -215,6 +228,7 @@ sudo apt install phpmyadmin
 #Run cacti initialization  by starting http://localhost/cacti in browswer
 #follow the prompts
 
+#SHOULD only need to do this once for all instances
 #Address PHP, Mariadb & other required tweaks for cacti pre-installation setup:
 - Some mysql settings can't be set when the service is up (read on reload)
 
