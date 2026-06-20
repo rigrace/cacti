@@ -225,6 +225,10 @@ mysql settings in:
 sudo vim /etc/mysql/my.cnf # and add them there
 [mariadb] for mariadb as installed above
 
+#reset apache & mariadb after completing changes
+./ApacheRestart.sh
+./MySQLRestart.sh
+
 ```bash
 sudo chown -R www-data:www-data /usr/share/cacti/site/resource/snmp_queries/
 sudo chown -R www-data:www-data /usr/share/cacti/site/resource/script_server/
@@ -242,24 +246,25 @@ Setup poller actuation
 	```
 2. Slightly more involved service base method
 	```bash
-	sudo vim /var/www/html/cacti/service/cactid.service
+	sudo vim /var/www/html/PROD/cacti/service/cactid.service
 	```
 	# Set 'User' & 'Group' to www-data
+    # SetExecStart=/var/www/html/PROD/cacti/cactid.php
         
     create cacti environment file
     ```bash
 	sudo mkdir -p /etc/sysconfig
-	sudo touch /etc/sysconfig/cactid
+	sudo touch /etc/sysconfig/cactPRODd
 	```bash
-	sudo cp -p /var/www/html/cacti/service/cactid.service /etc/systemd/system
+	sudo cp -p /var/www/html/PROD/cacti/service/cactid.service /etc/systemd/system/cactiPRODd.service
 	
-	sudo chown root:root /etc/systemd/system/cactid.service
+	sudo chown root:root /etc/systemd/system/cactiPRODd.service
 	
 
 	sudo sudo systemctl daemon-reload
-	sudo systemctl enable cactid
-	sudo systemctl restart cactid
-    sudo systemctl status cactid
+	sudo systemctl enable cactiPRODd
+	sudo systemctl restart cactiPRODd
+    sudo systemctl status cactiPRODd
 	```
 ----------------------------------
 
