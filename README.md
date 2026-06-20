@@ -254,18 +254,16 @@ Setup poller actuation
     create cacti environment file
     ```bash
 	sudo mkdir -p /etc/sysconfig
-	sudo touch /etc/sysconfig/cactPRODd
-	```bash
+	sudo touch /etc/sysconfig/cactiPRODd
+	
 	sudo cp -p /var/www/html/PROD/cacti/service/cactid.service /etc/systemd/system/cactiPRODd.service
 	
 	sudo chown root:root /etc/systemd/system/cactiPRODd.service
-	
-
 	sudo sudo systemctl daemon-reload
 	sudo systemctl enable cactiPRODd
 	sudo systemctl restart cactiPRODd
-    sudo systemctl status cactiPRODd
-	```
+        sudo systemctl status cactiPRODd
+    ```
 ----------------------------------
 
 ADDING WEATHERMAP
