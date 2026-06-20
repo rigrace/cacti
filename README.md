@@ -11,11 +11,9 @@ This is a port for use with tools, utilities, & libraries I see fit
 
 Last merge of Cacti/plugin_weathermap develop into cacti-1.2.x_weathermap-develop_rigrace: **2025-12-07**
 
- - functionality not yet verified 
-
 - [x] Shoe-horn of [Panzoom](https://www.jqueryscript.net/zoom/jQuery-Plugin-For-Panning-Zooming-Any-Elements-panzoom.html#google_vignette) project into map edit & display flows is functional
 
-- [ ] Cleanup of class variables, and thinking about how to OO the code
+- [x] Cleanup of class variables, and thinking about how to OO the code
 
 - [ ] Convert the use of OS files as the method of storage for map, node, & link data/configurations to tables
 
@@ -58,30 +56,32 @@ Add/enable aditional apache modules
 ```bash
 sudo a2enmod rewrite 
 ```
-#Clone cacti base application to local folder & push it into /var/www/html/(cacti)
+#Clone cacti base application to local folder & push it into /var/www/html/(PROD|TEST|DEV)/cacti
 
-CHANGE TO 1.2.x branch
+Clone cacti into ~/Documents/cacti
 ```bash
 #mkdir -p ~/Documents/cacti - not required - git makes the leaf/target folder
 
 git clone http://github.com/rigrace/cacti.git ~/Documents/cacti
-#CHANGE TO 1.2.x branch
-```
-Start configure cacti:
-```bash
+#CHANGE TO correct branch
+git checkout cacti-explore-a
+
+#Start setup of cactiPROD instance:
+
 cp ~/Documents/cacti/include/config.php.dist ~/Documents/cacti/include/config.php
 vim ~/Documents/cacti/include/config.php
   - set mysql connection credentials
 
-#if only one vhost will be used just use don't create any extra, just put cacti directly in /var/www/html/[cacti] 
+#if only one vhost will be used just use don't create any extra directory stucture, just put cacti directly in /var/www/html/cacti 
 #if you want to have multiple vhosts running cacti, do somthing like:
 sudo mkdir -p /var/www/html/PROD
 sudo mkdir -p /var/www/html/TEST
 sudo mkdir -p /var/www/html/DEV
 #etc...
-#do the following for each
-sudo cp -R ~/Documents/cacti /var/www/html/PROD
 
+#do the following for each
+sudo cp -R ~/Documents/cacti /var/www/html/(PROD|TEST|DEV)
+```
 #Set file permissions for apache:
 #Create a script to run these lines
 vim ~/SetCactiPermsInWWW.sh
@@ -150,16 +150,12 @@ sudo mysql -u root (actually using mariadb)
 once in mariadb
 ```SQL
 CREATE DATABASE cactiPROD DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
-CREATE DATABASE test;
-[create view to show mysql user status]
-create view test.musers_view as SELECT host, User, Select_priv, Insert_priv, Update_priv, Delete_priv, Execute_priv, Show_db_priv, ssl_type, grant_priv, ssl_cipher, x509_issuer, x509_subject FROM mysql.user;
-select * from test.musers_view;
 
-[create cactiuser for accessing database from cacti application, & phpmyadmin if installed]
-create user 'cactiuser'@'localhost' IDENTIFIED BY 'some_password';
-#alter user 'cactiuser'@'localhost' IDENTIFIED BY 'some_password'; [example of setting password after user is created]
-GRANT ALL PRIVILEGES ON cactiPROD.* TO 'cactiuser'@'localhost'; [SUID will not suffice as cacti creates database objects during at least the install]
-GRANT SELECT ON mysql.time_zone_name TO 'cactiuser'@'localhost'; [to be filled below]
+#create cactiuser for accessing database from cacti application, & phpmyadmin if installed
+create user 'cactiproduser'@'localhost' IDENTIFIED BY 'some_password';
+#alter user 'cactiproduser'@'localhost' IDENTIFIED BY 'some_password'; [example of setting password after user is created]
+GRANT ALL PRIVILEGES ON cactiPROD.* TO 'cactiproduser'@'localhost'; [SUID will not suffice as cacti creates database objects during at least the install]
+GRANT SELECT ON mysql.time_zone_name TO 'cactiproduser'@'localhost'; [to be filled below]
 
 [create admin for accessing database from cacti application, phpmyadmin if installed]
 create user 'admin'@'localhost' identified by 'some_password';
@@ -171,10 +167,11 @@ quit
 
 #run cacti database script to create cacti's database objects
 ```BASH
-mysql -u cactiuser -p cactiPROD < ~/Documents/cacti/cacti.sql
+mysql -u cactiproduser -p cactiPROD < ~/Documents/cacti/cacti.sql
 
-#set cacti's admin password
-mysql -u cactiuser -p
+#set cacti's admin password for (all) cacti instances
+#only need to do this once for all instances
+mysql -u cactiproduser -p
 
 ```
 ```mysql
@@ -187,10 +184,12 @@ quit
 ```
 
 #Load mysql timezones
-```
-BASH mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u admin -p mysql
+#only need to do this once for all instances
+```BASH
+mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u adminprod -p mysql
 ```
 #Set cacti admin user credentials
+#only need to do this once for all instances
 ```BASH
 mysql -u cactiuser -p
 ```
@@ -202,6 +201,7 @@ quit
 # cacti will prompt to change password at first login
 
 #Install phpmyadmin if not already
+#only need to do this once for all instances
 ```BASH
 sudo apt install phpmyadmin
 
