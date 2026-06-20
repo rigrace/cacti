@@ -262,8 +262,11 @@ Setup poller actuation
 	```bash
 	sudo vim /var/www/html/PROD/cacti/service/cactid.service
 	```
-	# Set 'User' & 'Group' to www-data
-    # SetExecStart=/var/www/html/PROD/cacti/cactid.php
+    #Set 'User' & 'Group' to www-data
+   
+    #EnvironmentFile=/etc/sysconfig/cactiPRODd
+   
+    #ExecStart=/var/www/html/PROD/cacti/cactiPRODd.php
         
     create cacti environment file
     ```bash
