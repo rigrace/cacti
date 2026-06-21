@@ -249,7 +249,10 @@ sudo chown -R www-data:www-data /usr/share/cacti/site/resource/script_server/
 sudo chown -R www-data:www-data /usr/share/cacti/site/resource/script_queries/
 sudo chown -R www-data:www-data /usr/share/cacti/site/scripts/
 ```
-
+-----------------
+#Allow user to develop from eclipse (rwx) in /var/www/html/DEV:
+sudo setfacl -m u:some_user:rwx html/
+sudo setfacl -Rm u:some_user:rwx html/DEV/
 -----------------
 Setup poller actuation
 1. quick & dirty cron method
