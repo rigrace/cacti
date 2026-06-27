@@ -234,6 +234,9 @@ sudo apt install phpmyadmin
 
 #php settings in:
 sudo vim /etc/php/#.#/apache2/php.ini
+#mAKE ASURE TYHAT set date.timezone is set, else the logs will be off
+date.timezone = America/Chicago
+
 
 mysql settings in:
 sudo vim /etc/mysql/my.cnf # and add them there
