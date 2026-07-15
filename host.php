@@ -1767,6 +1767,12 @@ function host() {
 			'sort' => 'ASC',
 			'tip' => __('The name by which this Device will be referred to.')
 		),
+	    'GoTo' => array(
+	            'display' => __('Access'),
+	            'align' => 'left',
+	            'sort' => 'ASC',
+	            'tip' => __('Run Hostname with browser.')
+	        ),
 		'hostname' => array(
 			'display' => __('Hostname'),
 			'align' => 'left',
@@ -1883,6 +1889,7 @@ function host() {
 
 			form_alternate_row('line' . $host['id'], true);
 			form_selectable_cell(filter_value($host['description'], get_request_var('filter'), 'host.php?action=edit&id=' . $host['id']), $host['id']);
+			form_selectable_cell('<a href=http://' . $host['hostname'] . ' target="_blank" >HTTP</a> <a href=ssh://' . $host['hostname'] . ' >SSH</a>', $host['id']);
 			form_selectable_cell(filter_value($host['hostname'], get_request_var('filter')), $host['id']);
 			form_selectable_cell(filter_value($host['id'], get_request_var('filter')), $host['id'], '', 'right');
 			form_selectable_cell('<a class="linkEditMain" href="' . $graphs_url . '">' . number_format_i18n($host['graphs'], '-1') . '</a>', $host['id'], '', 'right');

@@ -27,8 +27,9 @@ After=network.target
 Type=forking
 User=www-data
 Group=www-data
+#EnvironmentFile=/etc/sysconfig/cactiDEVd
 EnvironmentFile=/etc/sysconfig/cactid
-ExecStart=/var/www/html/cacti/cactid.php
+ExecStart=/var/www/html/DEV/cacti/cactid.php
 Restart=always
 RestartSec=5s
 
